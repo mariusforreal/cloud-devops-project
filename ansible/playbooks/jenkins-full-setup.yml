@@ -1,0 +1,20 @@
+---
+# Play 1: Configure Jenkins Master
+- name: Configure Jenkins Master
+  hosts: Jenkins_Master
+  become: true 
+  gather_facts: true
+
+  roles:
+    - common
+    - jenkins_master
+
+# Play 2: Configure Jenkins Slave
+- name: Configure Jenkins Slave
+  hosts: Jenkins_Slave 
+  become: true 
+  gather_facts: true
+
+  roles:
+    - common
+    - jenkins_slave

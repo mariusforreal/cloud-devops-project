@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloud-devops-app
+  namespace: argocd  # مكان تنصيب ArgoCD
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/myassen0/CloudDevOpsProject.git'  # ← غيّر USERNAME
+    targetRevision: HEAD
+    path: k8s  # مكان ملفات deployment داخل الريبو
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: ivolve
+  syncPolicy:
+    automated:
+      prune: true        # يحذف أي ريسورس تمسح من git
+      selfHeal: true     # يعيد أي ريسورس اتغير يدوي
+    syncOptions:
+    - CreateNamespace=true

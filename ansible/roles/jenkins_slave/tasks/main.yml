@@ -1,0 +1,39 @@
+---
+- name: Create Jenkins slave home directory
+  ansible.builtin.file:
+    path: /home/ec2-user/jenkins
+    state: directory
+    owner: ec2-user
+    group: ec2-user
+    mode: '0755' 
+  become: true
+
+- name: Ensure .ssh directory exists for ec2-user on slave 
+  ansible.builtin.file:
+    path: /home/ec2-user/.ssh
+    state: directory
+    owner: ec2-user
+    group: ec2-user
+    mode: '0700' 
+  become: true
+
+- name: Set up SSH key for Jenkins slave to connect to Master or Git (optional)
+  ansible.builtin.copy:
+    src: /root/CloudDevOpsProject/terraform/CloudDevOpsProject-keypair.pem 
+    dest: /home/ec2-user/.ssh/id_rsa 
+    owner: ec2-user
+    group: ec2-user
+    mode: '0600' 
+  become: true
+
+- name: Configure Java PATH for ec2-user 
+  ansible.builtin.lineinfile:
+    path: /home/ec2-user/.bashrc
+    line: 'export PATH="/usr/lib/jvm/java-17-amazon-corretto/bin:$PATH"' 
+    create: yes 
+    owner: ec2-user
+    group: ec2-user
+    mode: '0644'
+    state: present
+  become: true
+

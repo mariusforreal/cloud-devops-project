@@ -1,0 +1,50 @@
+# roles/common/tasks/main.yml
+---
+- name: Update dnf cache
+  dnf:
+    name: "*"
+    state: latest
+    update_cache: yes
+  become: true
+
+- name: Install Git
+  dnf:
+    name: git
+    state: present
+  become: true
+
+# --- Docker Installation for Amazon Linux 2023/2025 ---
+# Docker package is available directly from Amazon Linux repositories.
+# No need to add external repositories or GPG keys manually.
+
+- name: Install Docker CE and related packages
+  dnf:
+    name:
+      - docker          # This installs the main Docker engine and the 'docker compose' plugin.
+    state: present
+  become: true
+
+- name: Ensure Docker service is started and enabled
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: yes
+  become: true
+
+- name: Add 'ec2-user' to docker group
+  ansible.builtin.user:
+    name: ec2-user
+    groups: docker
+    append: yes
+  become: true
+  # After adding the user to the docker group,
+  # you'll need to log out/log in or restart the Docker service
+  # for the changes to apply. A 'reloaded' state on systemd can do this,
+  # or restarting the VM after the provisioner (which happens later in your workflow).
+
+# --- Java Installation ---
+- name: Install Java (OpenJDK 17 Corretto) - common requirement
+  dnf:
+    name: java-17-amazon-corretto-devel # This is the package name for OpenJDK 17 on Amazon Linux
+    state: present
+  become: true
